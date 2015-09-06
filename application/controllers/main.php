@@ -57,6 +57,7 @@ class Main extends Controller {
 			'help' => '/(\\/help)$/',
 			'last' => '/(\\/last)\\s+(\S+)+/',
 			'msgs' => '/(\\/msgs)\\s+(\S+)+/',
+			'wx' => '/(\\/wx)\\s+(\S+)+/',
 		);
 
 		$matches = null;
@@ -74,6 +75,7 @@ class Main extends Controller {
 						file_get_contents($website."/sendMessage?chat_id=$group_id&text=Comands:");
 						file_get_contents($website."/sendMessage?chat_id=$group_id&text=/last ID - last beacon from ID");
 						file_get_contents($website."/sendMessage?chat_id=$group_id&text=/msgs ID - show last 10 messages from ID");
+						file_get_contents($website."/sendMessage?chat_id=$group_id&text=/wx ID - show weather info from ID");
 					break;
 
 					case "last":
@@ -99,6 +101,19 @@ class Main extends Controller {
 							file_get_contents($website."/sendMessage?chat_id=$group_id&text=>".gmdate("Y-m-d H:i:s",$msg->time).
 							": ".$msg->srccall." -> ".$msg->dst.": ".urlencode($msg->message));
 						}
+						
+					break;
+					
+					case "wx":
+						$indicativo = $matches[2];
+						$result = file_get_contents("http://api.aprs.fi/api/get?name=$indicativo&what=wx&apikey=$aprsfiApiKey&format=json");
+						
+						//print_r($result);
+						$wx = json_decode($result);
+						//print_r($location);
+						file_get_contents($website."/sendMessage?chat_id=$group_id&text=WX%20from:".$wx->entries[0]->name."%20t:"
+						.gmdate("Y-m-d%20H:i:s",$wx->entries[0]->time)."%20T:".$wx->entries[0]->temp."%20P:".$wx->entries[0]->pressure
+						."%20H:".$wx->entries[0]->humidity."%20WD:".$wx->entries[0]->wind_direction."%20WS:".$wx->entries[0]->wind_speed."");
 						
 					break;
 				}

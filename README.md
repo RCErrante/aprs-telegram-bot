@@ -8,9 +8,7 @@ APRS services telegram bot
 
  - set your Telegram API key, botId and your url base at /config/config.php (sample provided)
 
-#framework info
-
-##PIP
+##framework info
 
 Telegram bot to bring a gateway between [Automatic Packet Reporting System (APRS)](https://en.wikipedia.org/wiki/Automatic_Packet_Reporting_System) and Telegram
 

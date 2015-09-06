@@ -1,6 +1,6 @@
 <?php
 
-class Airsoft_model extends Model {
+class APRS_model extends Model {
 	
 	public function getSomething($id)
 	{

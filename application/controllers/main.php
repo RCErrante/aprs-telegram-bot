@@ -14,7 +14,11 @@ class Main extends Controller {
 
 		$website = "https://api.telegram.org/bot".$botToken;
 
-		$update = file_get_contents($website."/getupdates");
+		// cuando se configure el webhook poner file_get_contents(php://input)
+
+		//$update = file_get_contents("php://input");
+		$update = file_get_contents($website."/getupdates?offset=606765153");
+
 		echo "<pre>";
 		print_r(json_decode($update));
 		$data  = json_decode($update);
@@ -38,12 +42,13 @@ class Main extends Controller {
 
 					//comprobar que estamos en un grupo
 
-			if (!$in_group) continue;
+			//if (!$in_group) continue;
 
 
 			$group_id 	= $msg->message->chat->id;
 			$from_id	= $msg->message->from->id;
 			$from_username	= $msg->message->from->username;
+			if (!isset($msg->message->text)) continue;
 			$text 		= $msg->message->text;
 
 	/*
@@ -114,13 +119,18 @@ stdClass Object
 
 					case "last":
 						echo "comando $commandkey<br>";
-						$indicativo = $matches[2];
-						$result = file_get_contents($website."http://api.aprs.fi/api/get?name=$indicativo&what=loc&apikey=$aprsfiApiKey&format=json");
+						echo "<pre>";
 						
-						echo '<pre>';
-						print_r(json_decode($result));
-						exit;
-						file_get_contents($website."/sendMessage?chat_id=$group_id&text=".$error);
+						$indicativo = $matches[2];
+						echo "last: ".$indicativo;
+						$result = file_get_contents("http://api.aprs.fi/api/get?name=$indicativo&what=loc&apikey=$aprsfiApiKey&format=json");
+						
+						print_r($result);
+						$location = json_decode($result);
+						print_r($location);
+						file_get_contents($website."/sendLocation?chat_id=$group_id&latitude=".$location->entries[0]->lat."&longitude=".$location->entries[0]->lng);
+						file_get_contents($website."/sendMessage?chat_id=$group_id&text=UTC:".gmdate("Y-m-d H:i:s",$location->entries[0]->lasttime)." - ".$location->entries[0]->comment);
+
 					break;
 
 					case "cancelarpartida":

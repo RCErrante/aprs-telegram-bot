@@ -6,7 +6,7 @@ class Main extends Controller {
 	{
 		$log = $this->loadHelper('log_helper');
 		
-		$log->log_message("pruebas");
+		//$log->log_message("");
 		
 		
 		global $config;
@@ -21,24 +21,24 @@ class Main extends Controller {
 
 		// cuando se configure el webhook poner file_get_contents(php://input)
 
-		//$update = file_get_contents("php://input");
-		$update = file_get_contents($website."/getupdates?offset=$lastid");
-
-		echo "<pre>";
-		//print_r(json_decode($update));
-		$data  = json_decode($update);
+		$update = file_get_contents("php://input");
+		//$update = file_get_contents($website."/getupdates?offset=$lastid");
+		
+		$msg = $data = json_decode($update);
+		
+//$log->log_message(print_r($data, true));
 
 		//hacemos la consulta de getupdates
 		//la recorremos para cada mensaje:
 
-		foreach ($data->result as $key => $msg){
+//		foreach ($data->update as $key => $msg){  // wh!
 
-			echo "Analizando mensaje $key<br>";
+			//echo "Analizando mensaje $key<br>";
 
 			$in_group = !isset($msg->message->chat->username);
 			$last_update_id = $msg->update_id;
 
-			echo "mensaje a grupo :". intval($in_group) ."<br>";
+			//echo "mensaje a grupo :". intval($in_group) ."<br>";
 
 			//comprobar que estamos en un grupo
 			//if (!$in_group) continue;
@@ -67,20 +67,17 @@ class Main extends Controller {
 			//print_r($matches);
 
 			if (!empty($matches)) {
-
+				$log->log_message($matches[0]." from: ".$from_id."(".$from_username.") group_id: ".$group_id);
+				
 				switch($commandkey){
 					case "help":
-						echo "comando $commandkey<br>";
 						file_get_contents($website."/sendMessage?chat_id=$group_id&text=Comands:");
 						file_get_contents($website."/sendMessage?chat_id=$group_id&text=/last ID - last beacon from ID");
 						file_get_contents($website."/sendMessage?chat_id=$group_id&text=/msgs ID - show last 10 messages from ID");
 					break;
 
 					case "last":
-						echo "comando $commandkey<br>";
-						
 						$indicativo = $matches[2];
-						echo "last: ".$indicativo;
 						$result = file_get_contents("http://api.aprs.fi/api/get?name=$indicativo&what=loc&apikey=$aprsfiApiKey&format=json");
 						
 						//print_r($result);
@@ -92,10 +89,7 @@ class Main extends Controller {
 					break;
 
 					case "msgs":
-						echo "comando $commandkey<br>";
-						
 						$indicativo = $matches[2];
-						echo "msgs: ".$indicativo;
 						$result = file_get_contents("http://api.aprs.fi/api/get?what=msg&dst=$indicativo&apikey=$aprsfiApiKey&format=json");
 						
 						//print_r($result);
@@ -112,7 +106,7 @@ class Main extends Controller {
 			$matches = null;
 			$lastid = $last_update_id+1;
 		}
-	}
+//	} // wh!
 	file_put_contents("./last.id",$lastid);
 	}
 }

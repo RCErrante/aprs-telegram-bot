@@ -55,6 +55,7 @@ class Main extends Controller {
 	// admin commands
 	$commands = array(
 			'help' => '/(\\/help)$/',
+			'aprshelp' => '/(\\/aprshelp)$/',
 			'last' => '/(\\/last)\\s+(\S+)+/',
 			'msgs' => '/(\\/msgs)\\s+(\S+)+/',
 			'wx' => '/(\\/wx)\\s+(\S+)+/',
@@ -72,6 +73,10 @@ class Main extends Controller {
 				
 				switch($commandkey){
 					case "help":
+						file_get_contents($website."/sendMessage?chat_id=$group_id&text=Use /aprshelp to get a list of commands");
+					break;
+					
+					case "aprshelp":
 						file_get_contents($website."/sendMessage?chat_id=$group_id&text=Comands:");
 						file_get_contents($website."/sendMessage?chat_id=$group_id&text=/last ID - last beacon from ID");
 						file_get_contents($website."/sendMessage?chat_id=$group_id&text=/msgs ID - show last 10 messages from ID");

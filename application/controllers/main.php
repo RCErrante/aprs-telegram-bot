@@ -4,6 +4,11 @@ class Main extends Controller {
 	
 	function index()
 	{
+		$log = $this->loadHelper('log_helper');
+		
+		$log->log_message("pruebas");
+		
+		
 		global $config;
 //		$model = $this->loadModel('aprs_model');
 
@@ -98,7 +103,7 @@ class Main extends Controller {
 						//print_r($msgs);
 						foreach($msgs->entries as $msg) {
 							file_get_contents($website."/sendMessage?chat_id=$group_id&text=>".gmdate("Y-m-d H:i:s",$msg->time).
-							": ".$msg->srccall." -> ".$msg->dst.": ".$msg->message);
+							": ".$msg->srccall." -> ".$msg->dst.": ".urlencode($msg->message));
 						}
 						
 					break;

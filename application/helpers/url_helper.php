@@ -15,6 +15,8 @@ class Url_helper {
 		$parts = explode('/', $_SERVER['REQUEST_URI']);
 	    return isset($parts[$seg]) ? $parts[$seg] : false;
 	}
+
+	
 	
 }
 

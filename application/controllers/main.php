@@ -66,8 +66,6 @@ class Main extends Controller {
 
 			$returnValue = preg_match($commandexp, $text, $matches);
 
-			//print_r($matches);
-
 			if (!empty($matches)) {
 				$log->log_message($matches[0]." from: ".$from_id."(".$from_username.") group_id: ".$group_id);
 				
@@ -87,9 +85,7 @@ class Main extends Controller {
 						$indicativo = $matches[2];
 						$result = file_get_contents("http://api.aprs.fi/api/get?name=$indicativo&what=loc&apikey=$aprsfiApiKey&format=json");
 						
-						//print_r($result);
 						$location = json_decode($result);
-						//print_r($location);
 						file_get_contents($website."/sendLocation?chat_id=$group_id&latitude=".$location->entries[0]->lat."&longitude=".$location->entries[0]->lng);
 						file_get_contents($website."/sendMessage?chat_id=$group_id&text=UTC:".gmdate("Y-m-d H:i:s",$location->entries[0]->lasttime)." - ".$location->entries[0]->comment);
 						
@@ -99,9 +95,7 @@ class Main extends Controller {
 						$indicativo = $matches[2];
 						$result = file_get_contents("http://api.aprs.fi/api/get?what=msg&dst=$indicativo&apikey=$aprsfiApiKey&format=json");
 						
-						//print_r($result);
 						$msgs = json_decode($result);
-						//print_r($msgs);
 						foreach($msgs->entries as $msg) {
 							file_get_contents($website."/sendMessage?chat_id=$group_id&text=>".gmdate("Y-m-d H:i:s",$msg->time).
 							": ".$msg->srccall." -> ".$msg->dst.": ".urlencode($msg->message));
@@ -112,10 +106,12 @@ class Main extends Controller {
 					case "wx":
 						$indicativo = $matches[2];
 						$result = file_get_contents("http://api.aprs.fi/api/get?name=$indicativo&what=wx&apikey=$aprsfiApiKey&format=json");
+						$result_loc = file_get_contents("http://api.aprs.fi/api/get?name=$indicativo&what=loc&apikey=$aprsfiApiKey&format=json");
 						
-						//print_r($result);
+						$location = json_decode($result_loc);
+						file_get_contents($website."/sendLocation?chat_id=$group_id&latitude=".$location->entries[0]->lat."&longitude=".$location->entries[0]->lng);
+
 						$wx = json_decode($result);
-						//print_r($location);
 						file_get_contents($website."/sendMessage?chat_id=$group_id&text=WX%20from:".$wx->entries[0]->name."%20t:"
 						.gmdate("Y-m-d%20H:i:s",$wx->entries[0]->time)."%20T:".$wx->entries[0]->temp."%20P:".$wx->entries[0]->pressure
 						."%20H:".$wx->entries[0]->humidity."%20WD:".$wx->entries[0]->wind_direction."%20WS:".$wx->entries[0]->wind_speed."");

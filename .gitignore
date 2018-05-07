@@ -1,2 +1,4 @@
 application/config/config.php
 *.kate-swp
+last.id
+logs/

@@ -46,15 +46,14 @@ class Main extends Controller {
 			$group_id 	= $msg->message->chat->id;
 			$from_id	= $msg->message->from->id;
 			$from_username	= $msg->message->from->username;
-			if (!isset($msg->message->text)) continue;
-			$text 		= $msg->message->text;
+			if (isset($msg->message->text)) $text = $msg->message->text;
 
 //rutina:
 	//si el mensaje concuerda con alguno de estos hacer lo que se tenga que hacer
 
 	// admin commands
 	$commands = array(
-			'help' => '/(\\/help)$/',
+			'help' => '/(\\/start)$/',
 			'aprshelp' => '/(\\/aprshelp)$/',
 			'last' => '/(\\/last)\\s+(\S+)+/',
 			'msgs' => '/(\\/msgs)\\s+(\S+)+/',

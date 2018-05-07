@@ -54,10 +54,10 @@ class Main extends Controller {
 	// admin commands
 	$commands = array(
 			'help' => '/(\\/start)$/',
-			'aprshelp' => '/(\\/aprshelp)$/',
-			'last' => '/(\\/last)\\s+(\S+)+/',
-			'msgs' => '/(\\/msgs)\\s+(\S+)+/',
-			'wx' => '/(\\/wx)\\s+(\S+)+/',
+			'aprshelp' => '/(\\/aprshelp|\\/aprshelp@\S+)$/',
+			'last' => '/(\\/last|\\/last@\S+)\\s+(\S+)+/',
+			'msgs' => '/(\\/msgs|\\/msgs@\S+)\\s+(\S+)+/',
+			'wx' => '/(\\/wx|\\/wx@\S+)\\s+(\S+)+/',
 		);
 
 		$matches = null;

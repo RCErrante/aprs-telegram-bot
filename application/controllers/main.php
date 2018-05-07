@@ -33,7 +33,7 @@ class Main extends Controller {
 
 //		foreach ($data->update as $key => $msg){  // wh!
 
-			//echo "Analizando mensaje $key<br>";
+//			echo "Analizando mensaje $update<br>";
 
 			$in_group = !isset($msg->message->chat->username);
 			$last_update_id = $msg->update_id;
@@ -53,11 +53,12 @@ class Main extends Controller {
 
 	// admin commands
 	$commands = array(
-			'help' => '/(\\/start)$/',
+			'help' => '/(\\/start|\\/help)$/',
 			'aprshelp' => '/(\\/aprshelp|\\/aprshelp@\S+)$/',
 			'last' => '/(\\/last|\\/last@\S+)\\s+(\S+)+/',
 			'msgs' => '/(\\/msgs|\\/msgs@\S+)\\s+(\S+)+/',
 			'wx' => '/(\\/wx|\\/wx@\S+)\\s+(\S+)+/',
+                        'ED5ZAH' => '/(\\/ed5zah|\\/ed5zah@\S+)$/',
 		);
 
 		$matches = null;
@@ -74,10 +75,10 @@ class Main extends Controller {
 					break;
 					
 					case "aprshelp":
-						file_get_contents($website."/sendMessage?chat_id=$group_id&text=Comands:");
-						file_get_contents($website."/sendMessage?chat_id=$group_id&text=/last ID - last beacon from ID");
-						file_get_contents($website."/sendMessage?chat_id=$group_id&text=/msgs ID - show last 10 messages from ID");
-						file_get_contents($website."/sendMessage?chat_id=$group_id&text=/wx ID - show weather info from ID");
+						file_get_contents($website."/sendMessage?chat_id=$group_id&text=Comands:%0A".
+							"/last ID - last beacon from ID%0A".
+							"/msgs ID - show last 10 messages from ID%0A".
+							"/wx ID - show weather info from ID");
 					break;
 
 					case "last":
@@ -85,8 +86,10 @@ class Main extends Controller {
 						$result = file_get_contents("http://api.aprs.fi/api/get?name=$indicativo&what=loc&apikey=$aprsfiApiKey&format=json");
 						
 						$location = json_decode($result);
-						file_get_contents($website."/sendLocation?chat_id=$group_id&latitude=".$location->entries[0]->lat."&longitude=".$location->entries[0]->lng);
-						file_get_contents($website."/sendMessage?chat_id=$group_id&text=UTC:".gmdate("Y-m-d H:i:s",$location->entries[0]->lasttime)." - ".$location->entries[0]->comment);
+						file_get_contents($website."/sendLocation?chat_id=$group_id&latitude="
+							.$location->entries[0]->lat."&longitude=".$location->entries[0]->lng);
+						file_get_contents($website."/sendMessage?chat_id=$group_id&text=UTC:"
+							.gmdate("Y-m-d H:i:s",$location->entries[0]->lasttime)." - ".$location->entries[0]->comment);
 						
 					break;
 
@@ -108,13 +111,21 @@ class Main extends Controller {
 						$result_loc = file_get_contents("http://api.aprs.fi/api/get?name=$indicativo&what=loc&apikey=$aprsfiApiKey&format=json");
 						
 						$location = json_decode($result_loc);
-						file_get_contents($website."/sendLocation?chat_id=$group_id&latitude=".$location->entries[0]->lat."&longitude=".$location->entries[0]->lng);
+						file_get_contents($website."/sendLocation?chat_id=$group_id&latitude="
+							.$location->entries[0]->lat."&longitude=".$location->entries[0]->lng);
 
 						$wx = json_decode($result);
 						file_get_contents($website."/sendMessage?chat_id=$group_id&text=WX%20from:".$wx->entries[0]->name."%20t:"
-						.gmdate("Y-m-d%20H:i:s",$wx->entries[0]->time)."%20T:".$wx->entries[0]->temp."%20P:".$wx->entries[0]->pressure
-						."%20H:".$wx->entries[0]->humidity."%20WD:".$wx->entries[0]->wind_direction."%20WS:".$wx->entries[0]->wind_speed."");
+							.gmdate("Y-m-d%20H:i:s",$wx->entries[0]->time)."%20T:".$wx->entries[0]->temp."%20P:".$wx->entries[0]->pressure
+							."%20H:".$wx->entries[0]->humidity."%20WD:".$wx->entries[0]->wind_direction."%20WS:".$wx->entries[0]->wind_speed."");
 						
+					break;
+
+					case "ED5ZAH":
+						$result = file_get_contents("https://api.brandmeister.network/v1.0/repeater/?action=get&q=214501");
+						$result = json_decode($result);
+						file_get_contents($website."/sendMessage?chat_id=$group_id&text=ED5ZAH%20last_update:%20"
+							.$result->last_updated."%20status:%20".$result->status);
 					break;
 				}
 			}
